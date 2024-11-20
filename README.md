@@ -28,9 +28,8 @@
 > [Use case](https://github.com/Matyushchenko/liquidity_calc/blob/master/use_cases.md)</br>
 > [Функциональные требования](https://github.com/Matyushchenko/liquidity_calc/blob/master/ФТ.md)</br>
 > [Нефункциональные требования](https://github.com/Matyushchenko/liquidity_calc/blob/master/НФТ.md)</br>
-> [Схема БД](cсылка)</br>
+> [Схема БД](</https://github.com/Matyushchenko/liquidity_calc/blob/master/%D1%81%D1%85%D0%B5%D0%BC%D0%B0_%D0%91%D0%94.md>)</br>
 > [API Запросы](cсылка)</br>
-
 </br>
 
 **Добавить UML / BPMN**
