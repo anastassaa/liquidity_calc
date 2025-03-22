@@ -25,6 +25,7 @@
 <br>
 
 > [Бизнес требования](https://github.com/Matyushchenko/liquidity_calc/blob/master/бизнес_требования.md)</br>
+> [BPMN](https://github.com/Matyushchenko/liquidity_calc/blob/master/bpmn.md)</br>
 > [Use case](https://github.com/Matyushchenko/liquidity_calc/blob/master/use_cases.md)</br>
 > [Функциональные требования](https://github.com/Matyushchenko/liquidity_calc/blob/master/ФТ.md)</br>
 > [Нефункциональные требования](https://github.com/Matyushchenko/liquidity_calc/blob/master/НФТ.md)</br>
