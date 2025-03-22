@@ -17,5 +17,5 @@
 **Процесс формирование отчета**
 ![Ликвидность (2)](https://github.com/user-attachments/assets/1a79d4e1-9b1d-440e-a68b-b3fd1c99eb13)
 
-
-https://stormbpmn.com/app/diagram/001717d3-24d6-4308-a61d-f4beb72e09fb?overlays=e30%3D
+Диаграммы разработаны с использованием stormbpmn.
+Полная версия: https://stormbpmn.com/app/diagram/001717d3-24d6-4308-a61d-f4beb72e09fb?overlays=e30%3D
