@@ -1,0 +1,1234 @@
+openapi: 3.0.0
+
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/AnastasiyaM/Liquidity/1.0.0
+  - description: Тестовая площадка
+    url: https://test.liquidity.ru/api
+  - description: Продуктовая площадка
+    url: https://liquidity.ru/api
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/AnastasiyaM/DemoProject_liquidity/1.0.0
+info:
+  description: |
+
+    ### Основные возможности
+
+    **Действия доступные пользователям и администраторам:**  
+    - Запуск расчета за дату и всем потокам или выбранному;
+    - Поиск расчетов с использованием фильтров;
+    - Просмотр статуса запущенного расчета;
+    - Запуск формирования отчета за дату;
+    - Поиск отчетов с использованием фильтров;
+    - Просмотр статуса запущенного отчета;
+    - Остановка процесса формирования отчета;
+    - Скачивание отчета.
+
+    **Действия доступные только администраторам платформы:**  
+    - Просмотр списока пользователей;
+    - Блокировка и активация аккаунтов;
+    - Редактирование данных пользователей и их прав.
+
+    **Возможности внутренних сервисов:**  
+    - Получение данных по платежам;
+    - Формирование платежей;
+    - Удаление платежей за дату с использованием фильтра по потоку.
+
+  version: "1.0.0"
+  title: Система расчета ликвидности
+  contact:
+    email: liquidity_calc@your-company.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: system
+    description: Operations available to system services
+  - name: admins
+    description: Secured Admin-only calls
+  - name: users
+    description: Operations available to regular users and admins
+paths:
+  /payments:
+    post:
+      tags: 
+        - system
+      summary: Создать новый платеж
+      operationId: addPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/payments'
+          application/xml:
+            schema: 
+              $ref: '#/components/schemas/payments'
+      responses:
+        '201': 
+          description: Успешно создан
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/payments'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/payments'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403': 
+          description: Недостаточно прав
+        '409': 
+          description: Объект уже существует
+        '422': 
+          description: Ошибка валидации
+      security:
+        - api_key: []
+    get:
+      tags: 
+        - system
+      summary: Получить список всех платежей
+      operationId: listPayments
+      parameters:
+        - name: valueDate
+          in: query
+          description: Фильтр по дате значения
+          required: false
+          schema: 
+            type: string
+            format: date
+        - name: dataFlow
+          in: query
+          description: Фильтр по потоку данных
+          required: false
+          schema: 
+            type: string
+        - name: calculationId
+          in: query
+          description: Фильтр по идентификатору расчета
+          required: false
+          schema: 
+            type: string
+      responses:
+        '200': 
+          description: Успешно получены
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/payments'
+            application/xml:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/payments'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404': 
+          description: Платежи не найдены        
+        '422':
+          description: Ошибка валидации
+  /payments/{id}:
+    head:
+      tags: 
+        - system
+      summary: Проверить наличие платежа
+      operationId: checkPaymentExistence
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор платежа
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        '200': 
+          description: Платеж найден
+          headers: 
+            Content-Length: 
+              description: Размер тела платежа (0 байт)
+              schema: 
+                type: integer
+                format: int32
+            Content-Type: 
+              description: Тип содержимого (application/json)
+              schema: 
+                type: string
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Недостаточно прав
+        '404': 
+          description: Платеж не найден
+        '500': 
+          description: Внутренняя ошибка сервера
+    get:
+      tags: 
+        - system
+      summary: Получить информацию о платеже по ID
+      operationId: getPaymentById
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор платежа
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        '200': 
+          description: Успешно получена информация
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/payments'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/payments'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Платеж не найден
+        '422':
+          description: Не удалось обработать запрос
+    delete:
+      tags: 
+        - system
+      summary: Удалить платеж по ID
+      operationId: deletePayment
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор платежа
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        '204': 
+          description: Успешно удалён
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/payments'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/payments'
+        '401': 
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403': 
+          description: Недостаточно прав
+        '404': 
+          description: Платеж не найдены
+        '422': 
+          description: Ошибка валидации
+      security:
+        - api_key: []
+  /payments/findByDate:
+    head:
+      tags: 
+        - system
+      summary: Проверить наличие платежей за дату
+      operationId: checkPaymentsByDateExistence
+      parameters:
+        - name: date
+          in: query
+          description: Дата поиска
+          required: true
+          schema: 
+            type: string
+            format: date
+      responses:
+        '200': 
+          description: Платежи найдены
+          headers: 
+            Content-Length: 
+              description: Размер ответа (0 байт)
+              schema: 
+                type: integer
+                format: int32
+            Content-Type: 
+              description: Тип содержимого (application/json)
+              schema: 
+                type: string
+        '403':
+          description: Недостаточно прав
+        '404': 
+          description: Платеж не найден
+        '400': 
+          description: Неверный запрос
+        '500': 
+          description: Внутренняя ошибка сервера
+    get:
+      tags: 
+        - system
+      summary: Найти платежи за дату
+      operationId: findPaymentsByDate
+      parameters:
+        - name: date
+          in: query
+          description: Дата поиска
+          required: true
+          schema: 
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Успешно найдены
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/payments'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Платеж не найден
+        '422':
+          description: Ошибка валидации
+    delete:
+      tags: 
+        - system
+      summary: Удалить платежи за дату
+      operationId: deletePaymentsByDate
+      parameters:
+        - name: date
+          in: query
+          description: Дата удаления
+          required: true
+          schema: 
+            type: string
+            format: date
+      responses:
+        '204': 
+          description: Успешно удалён
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/payments'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/payments'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'      
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'  
+        '403': 
+          description: Недостаточно прав
+        '404': 
+          description: Платежи не найдены
+        '422': 
+          description: Ошибка валидации    
+      security:
+        - api_key: []
+  /users:
+    post:
+      tags:
+        - admins
+      summary: Создать пользователя
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/users'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/users'
+      responses:
+        '201': 
+          description: Успешно создана задача
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/users'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/users'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403': 
+          description: Недостаточно прав
+        '409': 
+          description:  Пользователь уже существует
+        '422': 
+          description: Ошибка валидации
+      security:
+        - liqcalc_auth:
+            - write:tasks
+            - read:tasks
+    put:
+      tags: 
+        - admins
+      summary: Изменить данные пользователя
+      operationId: editUserData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/users'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/users'
+      responses:
+        '200': 
+          description: Успешно изменено
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/payments'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/payments'
+        '400': 
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403': 
+          description: Недостаточно прав
+        '404': 
+          description: Пользователь не найден
+        '422': 
+          description: Ошибка валидации
+      security:
+        - liqcalc_auth:
+            - write:tasks
+            - read:tasks
+  /users/findById:
+    post:
+      tags: 
+        - admins
+      summary: Получить информацию о пользователе по ID
+      operationId: getUserInfo
+      parameters:
+        - name: id
+          in: query
+          description: ID пользователя
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        '201': 
+          description: Успешно создан
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/users'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/users'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Недостаточно прав
+        '404': 
+          description: Пользователь не найден
+        '422':
+          description: Ошибка валидации
+      security:
+        - api_key: []
+  /users/listUsers:
+    post:
+      tags: 
+        - admins
+      summary: ??? Получить список пользователей
+      operationId: listUsers
+      parameters:
+        - name: active
+          in: query
+          description: Фильтр по активным или уволенным пользователям
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+              - false
+        - name: lastName
+          in: query
+          description: Фильтр по фамилии
+          required: false
+          schema: 
+            type: string
+        - name: firstName
+          in: query
+          description: Фильтр по имени
+          required: false
+          schema: 
+            type: string
+        - name: login
+          in: query
+          description: Фильтр по логину
+          required: false
+          schema: 
+            type: string
+        - name: role
+          in: query
+          description: Фильтр по роли
+          required: false
+          schema:
+            type: string
+            enum:
+              - analyst
+              - admin
+              - trader
+              - risk-manager
+      responses:
+        '201': 
+          description: Успешно создан
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/users'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/users'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Недостаточно прав
+        '404': 
+          description: Пользователи не найдены
+        '422':
+          description: Ошибка валидации
+      security:
+        - api_key: []
+  /calculatorTask:
+    post:
+      tags: 
+        - users
+      summary: Запустить расчет
+      operationId: startCalculatorTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/calculatorTask'
+          application/xml:
+            schema: 
+              $ref: '#/components/schemas/calculatorTask'
+      responses:
+        '201': 
+          description: Успешно создана задача
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/calculatorTask'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/calculatorTask'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403': 
+          description: Недостаточно прав
+        '409': 
+          description: Объект уже существует
+        '422': 
+          description: Ошибка валидации
+      security:
+        - liqcalc_auth:
+            - write:tasks
+            - read:tasks
+    get:
+      tags: 
+        - users
+      summary: Получить список задач калькулятора
+      operationId: listCalculatorTasks
+      parameters:
+        - name: valueDate
+          in: query
+          description: Фильтр по расчетной дате
+          required: false
+          schema: 
+            type: string
+            format: date
+        - name: createDate
+          in: query
+          description: Фильтр по дате создания задачи
+          required: false
+          schema: 
+            type: string
+            format: date
+        - name: dataFlow
+          in: query
+          description: Фильтр по типу потока данных
+          required: false
+          schema: 
+            type: string
+        - name: status
+          in: query
+          description: Фильтр по статусу задачи
+          required: false
+          schema: 
+            type: string
+            enum:
+            - processing
+            - interrupted
+            - cancelled
+            - failure
+            - completed
+      responses:
+        '200': 
+          description: Успешно получены
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/calculatorTask'
+            application/xml:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/calculatorTask'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'      
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'  
+        '403':
+          description: Недостаточно прав
+        '404': 
+          description: Задачи не найдены
+        '422':
+          description: Ошибка валидации
+      security:
+        - api_key: []
+    patch:
+      tags: 
+        - users    
+      summary: Изменить статус расчета
+      operationId: getCalculatorTaskById
+      parameters:
+        - name: id
+          in: query
+          description: ID пользователя (пользователь может остановить только свой расчет)
+          required: true
+          schema: 
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Новый статус расчета
+          required: false
+          schema: 
+            type: string
+            enum:
+            - processing
+            - interrupted
+            - cancelled
+            - failure
+            - completed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/StatusUpdate'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/StatusUpdate'
+      responses:
+        '200': 
+          description: Успешно изменено
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/calculatorTask'
+            application/xml:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/calculatorTask'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403': 
+          description: Недостаточно прав
+        '404': 
+          description: Пользователь не найден
+        '422': 
+          description: Ошибка валидации
+      security:
+        - liqcalc_auth:
+            - write:tasks
+            - read:tasks
+  /calculatorTask/{id}:    
+    get:
+      tags: 
+        - users
+      summary: Получить информацию по ID расчета
+      operationId: getCalculatorTaskById
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор задачи калькулятора
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        '200': 
+          description: Успешно получена информация
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/calculatorTask'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/calculatorTask'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'      
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Недостаточно прав
+        '404': 
+          description: Задача не найдена
+        '422':
+          description: Ошибка валидации
+      security:
+        - api_key: []
+  /reports:
+    post:
+      tags: 
+        - users
+      summary: Создать отчет
+      operationId: createReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/reports'
+          application/xml:
+            schema: 
+              $ref: '#/components/schemas/reports'
+      responses:
+        '201': 
+          description: Успешно создан
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/reports'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/reports'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403': 
+          description: Недостаточно прав
+        '409': 
+          description: Объект уже существует
+        '422': 
+          description: Ошибка валидации
+      security:
+        - liqcalc_auth:
+            - write:tasks
+            - read:tasks
+    get:
+      tags: 
+        - users
+      summary: Получить список отчетов
+      operationId: listReports
+      parameters:
+        - name: reportDate
+          in: query
+          description: Фильтр по расчетной дате
+          required: false
+          schema: 
+            type: string
+            format: date
+        - name: createDate
+          in: query
+          description: Фильтр по дате создания задачи
+          required: false
+          schema: 
+            type: string
+            format: date
+        - name: type
+          in: query
+          description: Фильтр по типу отчета
+          required: false
+          schema: 
+            type: string
+        - name: status
+          in: query
+          description: Фильтр по статусу задачи
+          required: false
+          schema: 
+            type: string
+            enum:
+            - processing
+            - interrupted
+            - cancelled
+            - failure
+            - completed
+      responses:
+        '200': 
+          description: Успешно получены
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/reports'
+            application/xml:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/reports'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'      
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404': 
+          description: Отчеты не найдены
+        '422':
+          description: Ошибка валидации
+    patch:
+      tags: 
+        - users
+      summary: Обновить статус отчета
+      operationId: updateReportStatus
+      parameters:
+        - name: id
+          in: query
+          description: ID пользователя (пользователь может остановить или отменить только свой отчет)
+          required: true
+          schema: 
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Новый статус отчета
+          required: false
+          schema: 
+            type: string
+            enum:
+            - processing
+            - interrupted
+            - cancelled
+            - failure
+            - completed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/StatusUpdate'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/StatusUpdate'
+      responses:
+        '200': 
+          description: Успешно изменено
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/reports'
+            application/xml:
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/reports'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403': 
+          description: Недостаточно прав
+        '404': 
+          description: Пользователь не найден
+        '422': 
+          description: Ошибка валидации
+      security:
+        - liqcalc_auth:
+            - write:tasks
+            - read:tasks
+  /reports/{id}:    
+    get:
+      tags: 
+        - users
+      summary: Получить информацию по ID отчета
+      operationId: getReportTaskById
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор отчета
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        '200': 
+          description: Успешно получена информация
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/reports'
+            application/xml:
+              schema: 
+                $ref: '#/components/schemas/reports'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'      
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Недостаточно прав
+        '404': 
+          description: Задача не найдена
+        '422':
+          description: Ошибка валидации
+      security:
+        - api_key: []
+components:
+  schemas:
+    payments:
+      type: object
+      required:
+        - id
+        - valueDate
+        - dataflow
+        - value
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        dataflow:
+          type: string
+          example: fxOptions
+        value:
+          type: number
+          example: -88379.93
+        portfolio:
+          type: string
+        currency:
+          type: string
+          example: 'USD/RUB'
+        rate:
+          type: number
+          example: 84.3
+        contractNumber:
+          type: string
+          example: "45366458"
+        maturityDate:
+          type: string
+          format: date-time
+          example: '2025-01-29T09:12:33.001Z'
+        legalEntity:
+          type: string
+          example: "JFIWHS"
+        valueDate:
+          type: string
+          format: date-time
+          example: '2025-01-29T09:12:33.001Z'
+        calculationId:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+    reports:
+      type: object
+      required:
+        - id
+        - type
+        - user
+        - createDate
+        - reportDate
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        status:
+          type: string
+          enum: ["processing", "failure", "completed", "interrupted", "cancelled"]
+          example: "interrupted"
+        createDate:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        reportDate:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        payments:
+          type: array
+          items:
+            type: object
+#            $ref: '#/components/schemas/payments'
+          example: [
+            {"id": "d290f1ee-6c54-4b01-90e6-d701748f0851", "dataflow": "fxOptions", "value": -88379.93, "currency": "USD/RUB", "rate": 84.3, "contractNumber": "45366458", "maturityDate" : "2025-01-29T09:12:33.001Z", "legalEntity" : "JFIWHS", "valueDate" : "2025-01-29T09:12:33.001Z", "calculationId" : "a290f1ee-6c54-4b01-90e6-d701748f0851"},
+            {"id": "f290f1ee-6c54-4b01-90e6-d701748f0851", "dataflow": "fxOptions", "value": 938379.13, "currency": "USD/RUB", "rate": 83.3, "contractNumber": "45223442", "maturityDate" : "2025-01-29T09:12:33.001Z", "legalEntity" : "JFIWHS", "valueDate" : "2025-01-29T09:12:33.001Z", "calculationId" : "a290f1ee-6c54-4b01-90e6-d701748f0851"}
+          ]    
+        user:
+          type: string
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        type:
+          type: string
+          example: 'fx-optins'
+          
+    calculatorTask:  
+      type: object
+      required:
+        - id
+        - createDate
+        - user_id
+        - valueDate
+        - status
+      properties:    
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748fss51
+        createDate:
+          type: string
+          format: date-time
+          example: '2025-01-29T09:12:33.001Z'
+        valueDate:
+          type: string
+          format: date-time
+          example: '2025-01-30T09:12:33.001Z'
+        user_id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0833
+        status:
+          type: string
+          enum: ["processing", "failure", "completed", "interrupted", "cancelled"]
+          example: "processing"
+        dataflow:
+          type: string
+          enum: ["fxOptions", "americanOptions", "bondSpot", "fxSpot", "deposit"]
+          example: "fxOptions" 
+    users:      
+      type: object
+      required:
+        - id
+        - login
+        - active
+      properties:    
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748fss51
+        firstName:
+          type: string
+          example: "Имя пользователя"
+        lastName:
+          type: string
+          example: 'Фамилия пользователя'
+        role:
+          type: string
+          enum: ["analyst", "admin", "tarder", "risk-manager"]
+          example: "analyst" 
+        login:
+          type: string
+          example: 'alex'
+        active:
+          type: boolean
+          example: true
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+          example: IncorrectRequestBody
+        message:
+          type: string
+          example: "Некорректное тело запроса"
+      xml:
+        name: '##default'
+    StatusUpdate:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        status:
+          type: string
+          example: waiting
+  securitySchemes:
+    liqcalc_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://liquidity.swagger.io/oauth/authorize
+          scopes:
+            write:tasks: change tasks in your account
+            read:tasks: read your tasks
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
